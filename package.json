@@ -1,0 +1,16 @@
+{
+  "name": "mongoshell_scripts",
+  "version": "1.0.0",
+  "description": "MongoDB shell scripts in JS for easy admin tasks",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "mongo",
+    "shell",
+    "scripts"
+  ],
+  "author": "Sidharth Mishra",
+  "license": "Apache-2.0"
+}

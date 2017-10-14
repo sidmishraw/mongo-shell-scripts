@@ -147,7 +147,13 @@ var getMatchingVehicleCatalogs = function (versionId, year, make, model, bodySty
   ]);
 };
 
+/**
+ * initiateOperation
+ */
 var initiateOperation = function () {
-  var versionId = getVehicleMasterForWI()["_id"];
+  var versionCursor = getVehicleMasterForWI();
+  while (versionCursor.hasNext()) {
+    printjson(versionCursor.next());
+  }
   var quotesCursor = getLegacyQuotesForUpdation();
 };

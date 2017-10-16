@@ -234,13 +234,13 @@ def stage2(oldQuotes):
     "E2LXMONGDBA02.west.esurance.com", 27017, "cache")
   activeVersionId = activeVehicleMasters[0]["_id"]
   for quote in oldQuotes:
-    quoteId = quote["_id"];
-    legacyQuoteId = quote["legacyQuotes"]["_id"];
-    assetId = quote["legacyQuotes"]["assets"]["_id"];
-    year = quote["legacyQuotes"]["assets"]["year"];
-    make = quote["legacyQuotes"]["assets"]["make"] + 0;
-    model = quote["legacyQuotes"]["assets"]["model"] + 0;
-    bodyStyle = quote["legacyQuotes"]["assets"]["bodyStyle"] + 0;
+    quoteId = quote["_id"]
+    legacyQuoteId = quote["legacyQuotes"]["_id"]
+    assetId = quote["legacyQuotes"]["assets"]["_id"]
+    year = quote["legacyQuotes"]["assets"]["year"]
+    make = quote["legacyQuotes"]["assets"]["make"] + 0
+    model = quote["legacyQuotes"]["assets"]["model"] + 0
+    bodyStyle = quote["legacyQuotes"]["assets"]["bodyStyle"] + 0
     catalogs = getMatchingVehicleCatalogs(
       "E2LXMONGDBA02.west.esurance.com",
       27017, 
@@ -252,22 +252,22 @@ def stage2(oldQuotes):
       bodyStyle
     )
     for catalog in catalogs:
-      makeId = catalog["makes"]["_id"];
-      modelId = catalog["models"]["models"]["_id"];
-      bodyStyleId = catalog["bodyStyle"][0]["bodyStyles"][0]["_id"];
+      makeId = catalog["makes"]["_id"]
+      modelId = catalog["models"]["models"]["_id"]
+      bodyStyleId = catalog["bodyStyle"][0]["bodyStyles"][0]["_id"]
       newQuote = deepcopy(quote)
       uQuote = deepcopy(quote)
       # for NewQuotes
-      newQuote["legacyQuotes"]["assets"]["make"] = makeId;
-      newQuote["legacyQuotes"]["assets"]["model"] = modelId;
-      newQuote["legacyQuotes"]["assets"]["bodyStyle"] = bodyStyleId;
+      newQuote["legacyQuotes"]["assets"]["make"] = makeId
+      newQuote["legacyQuotes"]["assets"]["model"] = modelId
+      newQuote["legacyQuotes"]["assets"]["bodyStyle"] = bodyStyleId
       # for UQuotesLog
-      uQuote["legacyQuotes"]["assets"]["makeOld"] = make;
-      uQuote["legacyQuotes"]["assets"]["make"] = makeId;
-      uQuote["legacyQuotes"]["assets"]["modelOld"] = model;
-      uQuote["legacyQuotes"]["assets"]["model"] = modelId;
-      uQuote["legacyQuotes"]["assets"]["bodyStyleOld"] = bodyStyle;
-      uQuote["legacyQuotes"]["assets"]["bodyStyle"] = bodyStyleId;
+      uQuote["legacyQuotes"]["assets"]["makeOld"] = make
+      uQuote["legacyQuotes"]["assets"]["make"] = makeId
+      uQuote["legacyQuotes"]["assets"]["modelOld"] = model
+      uQuote["legacyQuotes"]["assets"]["model"] = modelId
+      uQuote["legacyQuotes"]["assets"]["bodyStyleOld"] = bodyStyle
+      uQuote["legacyQuotes"]["assets"]["bodyStyle"] = bodyStyleId
       # insert the newQuote into NewQuotes collection
       NewQuotes(
         "E2LXMONGDBA02.west.esurance.com", 
@@ -306,9 +306,25 @@ def stage3(stage2Status):
       "cache"
     ).update_one(
       {
-        
+        "_id": newQuote["_id"],
+        "legacyQuotes": {
+          "$elemMatch": {
+            "_id": newQuote["legacyQuotes"]["_id"]
+          }
+        },
+        "legacyQuotes.assets": {
+          "$elemMatch": {
+            "_id": newQuote["legacyQuotes"]["assets"]["_id"]
+          }
+        }
       },
-      {},
+      {
+        "$set": {
+          "legacyQuotes.$.assets.$.make": newQuote["legacyQuotes"]["assets"]["model"],
+          "legacyQuotes.$.assets.$.model": newQuote["legacyQuotes"]["assets"]["model"],
+          "legacyQuotes.$.assets.$.bodyStyle": newQuote["legacyQuotes"]["assets"]["bodyStyle"] 
+        }
+      },
       upsert=False
     )
 
